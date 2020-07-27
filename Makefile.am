@@ -21,6 +21,9 @@ rasdaemon_SOURCES = rasdaemon.c ras-events.c ras-mc-handler.c \
 if WITH_SQLITE3
    rasdaemon_SOURCES += ras-record.c
 endif
+if WITH_BROADCAST
+   rasdaemon_SOURCES += ras-server.c
+endif
 if WITH_AER
    rasdaemon_SOURCES += ras-aer-handler.c
 endif
@@ -59,7 +62,7 @@ rasdaemon_LDADD = -lpthread $(SQLITE3_LIBS) libtrace/libtrace.a
 include_HEADERS = config.h  ras-events.h  ras-logger.h  ras-mc-handler.h \
 		  ras-aer-handler.h ras-mce-handler.h ras-record.h bitfield.h ras-report.h \
 		  ras-extlog-handler.h ras-arm-handler.h ras-non-standard-handler.h \
-		  ras-devlink-handler.h ras-diskerror-handler.h
+		  ras-devlink-handler.h ras-diskerror-handler.h ras-server.h
 
 # This rule can't be called with more than one Makefile job (like make -j8)
 # I can't figure out a way to fix that

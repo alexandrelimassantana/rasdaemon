@@ -38,6 +38,7 @@
 #include "ras-devlink-handler.h"
 #include "ras-diskerror-handler.h"
 #include "ras-record.h"
+#include "ras-server.h"
 #include "ras-logger.h"
 
 /*
@@ -764,7 +765,7 @@ static int add_event_handler(struct ras_events *ras, struct pevent *pevent,
 	return 0;
 }
 
-int handle_ras_events(int record_events)
+int handle_ras_events(int record_events, int broadcast_events)
 {
 	int rc, page_size, i;
 	int num_events = 0;
@@ -806,6 +807,9 @@ int handle_ras_events(int record_events)
 	ras->pevent = pevent;
 	ras->page_size = page_size;
 	ras->record_events = record_events;
+
+  if (broadcast_events)
+    ras->broadcast_events = server_begin() == 0;
 
 	rc = add_event_handler(ras, pevent, page_size, "ras", "mc_event",
 			       ras_mc_event_handler, NULL, MC_EVENT);

@@ -415,8 +415,11 @@ static int read_ras_event_all_cpus(struct pthread_data *pdata,
 			goto error;
 	}
 
+  clock_t start, end;
+  double cpu_interval;
 	do {
 		ready = poll(fds, (n_cpus + 1), -1);
+    start = clock();
 		if (ready < 0) {
 			log(TERM, LOG_WARNING, "poll\n");
 		}
@@ -490,6 +493,10 @@ static int read_ras_event_all_cpus(struct pthread_data *pdata,
 			break;
 		}
 #endif
+    end = clock();
+    cpu_interval = ((double) (end - start)) / CLOCKS_PER_SEC;
+    log(TERM, LOG_DEBUG,
+	    "Elapsed CPU time to process tracing buffer: %.4f.\n", cpu_interval);
 	} while (1);
 
 	/* poll() is not supported. We need to fallback to the old way */

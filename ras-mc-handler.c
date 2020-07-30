@@ -24,6 +24,7 @@
 #include "ras-record.h"
 #include "ras-logger.h"
 #include "ras-report.h"
+#include "ras-server.h"
 
 int ras_mc_event_handler(struct trace_seq *s,
 			 struct pevent_record *record,
@@ -188,6 +189,10 @@ int ras_mc_event_handler(struct trace_seq *s,
 	ras_report_mc_event(ras, &ev);
 #endif
 
+#ifdef HAVE_BROADCAST
+  if(ras->broadcast_events)
+	  ras_broadcast_mc_event(&ev);
+#endif
 	return 0;
 
 parse_error:

@@ -29,6 +29,7 @@
 #include "ras-record.h"
 #include "ras-logger.h"
 #include "ras-report.h"
+#include "ras-server.h"
 
 
 static const struct {
@@ -125,6 +126,11 @@ int ras_diskerror_event_handler(struct trace_seq *s,
 #ifdef HAVE_ABRT_REPORT
 	/* Report event to ABRT */
 	ras_report_diskerror_event(ras, &ev);
+#endif
+
+#ifdef HAVE_BROADCAST
+  if(ras->broadcast_events)
+	  ras_broadcast_diskerror_event(&ev);
 #endif
 	free(ev.dev);
 	return 0;

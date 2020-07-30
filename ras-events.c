@@ -809,7 +809,7 @@ int handle_ras_events(int record_events, int broadcast_events)
 	ras->record_events = record_events;
 
   if (broadcast_events)
-    ras->broadcast_events = server_begin() == 0;
+    ras->broadcast_events = ras_server_start() == 0;
 
 	rc = add_event_handler(ras, pevent, page_size, "ras", "mc_event",
 			       ras_mc_event_handler, NULL, MC_EVENT);
@@ -959,6 +959,9 @@ err:
 
 	if (pevent)
 		pevent_free(pevent);
+
+  if(ras->broadcast_events)
+    ras_server_stop();
 
 	if (ras) {
 		for (i = 0; i < NR_EVENTS; i++) {

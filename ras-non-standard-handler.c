@@ -21,6 +21,7 @@
 #include "ras-record.h"
 #include "ras-logger.h"
 #include "ras-report.h"
+#include "ras-server.h"
 
 static p_ns_dec_tab * ns_dec_tab;
 static size_t dec_tab_count;
@@ -214,6 +215,11 @@ int ras_non_standard_event_handler(struct trace_seq *s,
 #ifdef HAVE_ABRT_REPORT
 	/* Report event to ABRT */
 	ras_report_non_standard_event(ras, &ev);
+#endif
+
+#ifdef HAVE_BROADCAST
+  if(ras->broadcast_events)
+	  ras_broadcast_non_standard_event(&ev);
 #endif
 
 	return 0;

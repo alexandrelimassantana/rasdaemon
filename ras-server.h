@@ -19,38 +19,45 @@
 #ifndef __RAS_SERVER_H
 #define __RAS_SERVER_H
 
-#include <pthread.h>
-
 #include "config.h"
+#include "ras-events.h"
 
-/*
- * UNIX socket name, in abstract namespace, when broadcast is set.
- */
 #define SOCKET_NAME "rasdaemon"
 #define SERVER_MAX_CONN 10
+#define MSG_SIZE 255
 
 struct ras_server {
+  pthread_t tid;
+
   int socketfd;
-  int *conn;
-  int conn_size;
+  struct pollfd *fds;
+  int nclients;
 };
 
 #ifdef HAVE_BROADCAST
 
-/**
- * Create a local UNIX server for broadcasting RAS events to other processes
- **/
-pthread_t server_begin(void);
+int ras_server_start(void);
+void ras_server_stop(void);
 
-/**
- * Broadcast a message to all processes connected to the server
- **/
-void server_broadcast(const char *msg, size_t size);
+int ras_broadcast_mc_event(struct ras_mc_event *ev);
+int ras_broadcast_aer_event(struct ras_aer_event *ev);
+int ras_broadcast_mce_event(struct mce_event *ev);
+int ras_broadcast_non_standard_event(struct ras_non_standard_event *ev);
+int ras_broadcast_arm_event(struct ras_arm_event *ev);
+int ras_broadcast_devlink_event(struct devlink_event *ev);
+int ras_broadcast_diskerror_event(struct diskerror_event *ev);
 
 #else
 
-static inline pthread_t server_begin(void) { return -1; }
-static inline void server_broadcast(const char *msg, size_t size) {}
+static inline int ras_server_start(void) { return 0; }
+static inline void ras_server_stop(void)  }
+static inline int ras_broadcast_mc_event(struct ras_mc_event *ev) { return 0; }
+static inline int ras_broadcast_aer_event(struct ras_aer_event *ev) { return 0; }
+static inline int ras_broadcast_mce_event(struct mce_event *ev) { return 0; }
+static inline int ras_broadcast_non_standard_event(struct ras_non_standard_event *ev) { return 0; }
+static inline int ras_broadcast_arm_event(struct ras_arm_event *ev) { return 0; }
+static inline int ras_broadcast_devlink_event(struct devlink_event *ev) { return 0; }
+static inline int ras_broadcast_diskerror_event(struct diskerror_event *ev) { return 0; }
 
 #endif
 
